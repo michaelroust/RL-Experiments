@@ -8,10 +8,11 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 # Set device
-device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
 
 class ReplayBuffer:
-    def __init__(self, max_size=1e6):
+    def __init__(self, max_size=2e6):
         self.buffer = []
         self.max_size = int(max_size)
         self.position = 0
@@ -31,14 +32,17 @@ class Actor(nn.Module):
         super(Actor, self).__init__()
         self.max_action = max_action
         
-        self.l1 = nn.Linear(state_dim, 256)
-        self.l2 = nn.Linear(256, 256)
-        self.l3 = nn.Linear(256, action_dim)
+        # Smaller architecture with layer normalization
+        self.l1 = nn.Linear(state_dim, 128)
+        self.ln1 = nn.LayerNorm(128)
+        self.l2 = nn.Linear(128, 128)
+        self.ln2 = nn.LayerNorm(128)
+        self.l3 = nn.Linear(128, action_dim)
         self.to(device)
 
     def forward(self, state):
-        a = F.relu(self.l1(state))
-        a = F.relu(self.l2(a))
+        a = F.relu(self.ln1(self.l1(state)))
+        a = F.relu(self.ln2(self.l2(a)))
         a = torch.tanh(self.l3(a)) * self.max_action
         return a
 
@@ -46,42 +50,46 @@ class Critic(nn.Module):
     def __init__(self, state_dim, action_dim):
         super(Critic, self).__init__()
         # Q1 architecture
-        self.l1 = nn.Linear(state_dim + action_dim, 256)
-        self.l2 = nn.Linear(256, 256)
-        self.l3 = nn.Linear(256, 1)
+        self.l1 = nn.Linear(state_dim + action_dim, 128)
+        self.ln1 = nn.LayerNorm(128)
+        self.l2 = nn.Linear(128, 128)
+        self.ln2 = nn.LayerNorm(128)
+        self.l3 = nn.Linear(128, 1)
 
         # Q2 architecture
-        self.l4 = nn.Linear(state_dim + action_dim, 256)
-        self.l5 = nn.Linear(256, 256)
-        self.l6 = nn.Linear(256, 1)
+        self.l4 = nn.Linear(state_dim + action_dim, 128)
+        self.ln4 = nn.LayerNorm(128)
+        self.l5 = nn.Linear(128, 128)
+        self.ln5 = nn.LayerNorm(128)
+        self.l6 = nn.Linear(128, 1)
         self.to(device)
 
     def forward(self, state, action):
         sa = torch.cat([state, action], 1)
 
-        q1 = F.relu(self.l1(sa))
-        q1 = F.relu(self.l2(q1))
+        q1 = F.relu(self.ln1(self.l1(sa)))
+        q1 = F.relu(self.ln2(self.l2(q1)))
         q1 = self.l3(q1)
 
-        q2 = F.relu(self.l4(sa))
-        q2 = F.relu(self.l5(q2))
+        q2 = F.relu(self.ln4(self.l4(sa)))
+        q2 = F.relu(self.ln5(self.l5(q2)))
         q2 = self.l6(q2)
         return q1, q2
 
     def Q1(self, state, action):
         sa = torch.cat([state, action], 1)
-        q1 = F.relu(self.l1(sa))
-        q1 = F.relu(self.l2(q1))
+        q1 = F.relu(self.ln1(self.l1(sa)))
+        q1 = F.relu(self.ln2(self.l2(q1)))
         q1 = self.l3(q1)
         return q1
 
 class TD3:
     def __init__(self, state_dim, action_dim, max_action):
         self.actor = Actor(state_dim, action_dim, max_action)
-        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=3e-4)
+        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=1e-4)
         
         self.critic = Critic(state_dim, action_dim)
-        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=3e-4)
+        self.critic_optimizer = optim.Adam(self.critic.parameters(), lr=1e-4)
         
         self.critic_target = Critic(state_dim, action_dim)
         self.critic_target.load_state_dict(self.critic.state_dict())
@@ -95,7 +103,7 @@ class TD3:
         self.total_it = 0
         self.gamma = 0.99  # Discount factor
         self.tau = 0.005  # Target network update rate
-        self.batch_size = 256
+        self.batch_size = 1024
         self.policy_delay = 2  # Delayed policy updates
         self.noise_scale = 0.2  # Noise scale for exploration
         self.noise_clip = 0.5  # Noise clipping range
@@ -111,11 +119,11 @@ class TD3:
         state, action, reward, next_state, done = replay_buffer.sample(batch_size)
         
         # Convert to tensors
-        state = torch.FloatTensor(state).to(device)
-        action = torch.FloatTensor(action).to(device)
-        reward = torch.FloatTensor(reward).to(device)
-        next_state = torch.FloatTensor(next_state).to(device)
-        done = torch.FloatTensor(done).to(device)
+        state = torch.FloatTensor(np.array(state)).to(device)
+        action = torch.FloatTensor(np.array(action)).to(device)
+        reward = torch.FloatTensor(np.array(reward)).to(device)
+        next_state = torch.FloatTensor(np.array(next_state)).to(device)
+        done = torch.FloatTensor(np.array(done)).to(device)
 
         # Compute target Q value
         with torch.no_grad():
@@ -123,7 +131,7 @@ class TD3:
             next_action = (self.actor_target(next_state) + noise).clamp(-self.max_action, self.max_action)
             target_Q1, target_Q2 = self.critic_target(next_state, next_action)
             target_Q = torch.min(target_Q1, target_Q2)
-            target_Q = reward + (1 - done) * self.gamma * target_Q
+            target_Q = reward.unsqueeze(1) + (1 - done.unsqueeze(1)) * self.gamma * target_Q
 
         # Get current Q estimates
         current_Q1, current_Q2 = self.critic(state, action)
@@ -233,7 +241,7 @@ def plot_rewards(rewards):
 
 if __name__ == "__main__":
     # Create environment for continuous control
-    env = gym.make('Walker2d-v4')
+    env = gym.make('Walker2d-v5')
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     max_action = float(env.action_space.high[0])

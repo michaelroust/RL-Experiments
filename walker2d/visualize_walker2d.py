@@ -23,7 +23,7 @@ def visualize_model(env, agent, num_episodes=5, max_steps=1000):
 
 if __name__ == "__main__":
     # Create environment for continuous control
-    env = gym.make('Walker2d-v4', render_mode='human')
+    env = gym.make('Walker2d-v5', render_mode='human')
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
     max_action = float(env.action_space.high[0])

@@ -5,7 +5,7 @@ This repository contains a collection of reinforcement learning experiments, inc
 #### SAC Implementation (State-of-the-Art)
 Soft Actor-Critic implementation targeting the best reported performance.
 
-**5 Trials (Average Score: 290.43)**
+**5 Trials (Average Score: 290.43)** - ~2-3 hours on MPS
 ![Lunar Lander SAC Demo](lunar-lander-sac/videos/lunar_lander_sac_combined.gif?loop=1)
 
 **Implementation Details:**
@@ -39,6 +39,15 @@ python create_gif.py
 - Experience replay with large buffer
 - Target network updates
 
+**Training Time:**
+- CPU: ~12-15 hours for 100K episodes
+- A100 GPU: ~3-4 hours for 100K episodes
+- Optimized for A100 with:
+  - 256-256 unit networks
+  - Batch size of 256
+  - 1M replay buffer
+  - 3e-4 learning rate
+
 **State-of-the-Art Results:**
 - PPO2 with GAE: ~280-300
 - SAC (Soft Actor-Critic): ~300-320
@@ -48,7 +57,8 @@ python create_gif.py
 #### Walker2d Implementation
 TD3 (Twin Delayed DDPG) implementation for the Walker2d environment, with both PyTorch and JAX versions.
 
-**Performance Demo (Average Score: 3500+)**
+**Performance Demo (Average Score: 5000+)** - ~2-3 days on A100
+
 ![Walker2d TD3 Demo](walker2d/videos/replay.gif?loop=1)
 
 **Implementation Details:**
@@ -86,3 +96,13 @@ python walker2d-hf/visualise_walker2d_hf.py
 - Target policy smoothing for regularization
 - Experience replay with large buffer
 - Target network updates with soft updates 
+
+**Training Time:**
+- CPU: ~5-7 days for 1M episodes
+- A100 GPU: ~2-3 days for 1M episodes
+- Optimized for A100 with:
+  - 128-128 unit networks
+  - Layer normalization
+  - 1024 batch size
+  - 2M replay buffer
+  - 1e-4 learning rate 
