@@ -47,7 +47,8 @@ python create_gif.py
 #### Walker2d Implementation
 TD3 (Twin Delayed DDPG) implementation for the Walker2d environment, with both PyTorch and JAX versions.
 
-**Walker2d Demo**
+**Performance Demo**
+
 ![Walker2d TD3 Demo](walker2d/videos/replay.gif)
 
 **Implementation Details:**
