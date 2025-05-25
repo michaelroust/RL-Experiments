@@ -238,8 +238,7 @@ if __name__ == "__main__":
     action_dim = env.action_space.shape[0]
     max_action = float(env.action_space.high[0])
     
-    num_episodes = 100  # 1M episodes
-    # num_episodes = 1_000_000  # 1M episodes
+    num_episodes = 1_000_000  # 1M episodes
     max_steps = 1000          # 1000 steps per episode
     eval_interval = 10_000    # Evaluate every 10K episodes
     eval_episodes = 10        # 10 episodes for evaluation

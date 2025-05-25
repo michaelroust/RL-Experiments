@@ -43,3 +43,45 @@ python create_gif.py
 - SAC (Soft Actor-Critic): ~300-320
 - TD3 (Twin Delayed DDPG): ~280-290
 - A2C with PER: ~260-280 
+
+#### Walker2d Implementation
+TD3 (Twin Delayed DDPG) implementation for the Walker2d environment, with both PyTorch and JAX versions.
+
+**Walker2d Demo**
+![Walker2d TD3 Demo](walker2d/videos/replay.gif)
+
+**Implementation Details:**
+- Algorithm: Twin Delayed DDPG (TD3)
+- Frameworks: PyTorch and JAX
+- Environment: Gymnasium's Walker2d-v4
+- Architecture: Twin Q-Networks with Delayed Policy Updates
+
+**Features:**
+- PyTorch implementation with full training pipeline
+- JAX implementation for faster training
+- Model visualization and evaluation tools
+- Pre-trained model download functionality
+
+**Usage:**
+```bash
+# PyTorch Version
+# Train the model
+python walker2d/walker2d.py
+
+# Visualize the trained model
+python walker2d/visualize_walker2d.py
+
+# JAX Version
+# Download pre-trained model
+python walker2d-hf/download_model.py
+
+# Visualize the model
+python walker2d-hf/visualise_walker2d_hf.py
+```
+
+**Technical Features:**
+- Twin Q-Networks for stable value estimation
+- Delayed policy updates to prevent overestimation
+- Target policy smoothing for regularization
+- Experience replay with large buffer
+- Target network updates with soft updates 
