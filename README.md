@@ -6,7 +6,7 @@ This repository contains a collection of reinforcement learning experiments, inc
 Soft Actor-Critic implementation targeting the best reported performance.
 
 **5 Trials (Average Score: 290.43)**
-![Lunar Lander SAC Demo](lunar-lander-sac/videos/lunar_lander_sac_combined.gif)
+![Lunar Lander SAC Demo](lunar-lander-sac/videos/lunar_lander_sac_combined.gif?loop=1)
 
 **Implementation Details:**
 - Algorithm: Soft Actor-Critic (SAC)
@@ -17,6 +17,7 @@ Soft Actor-Critic implementation targeting the best reported performance.
 **Performance:**
 - The GIF above shows multiple successful landings by the SAC agent, demonstrating stable and consistent control.
 - Achieves average rewards in the 250-320 range, matching state-of-the-art results for this environment.
+- State-of-the-art performance with average score of 290.43 over 5 trials.
 
 **Usage:**
 ```bash
@@ -49,7 +50,7 @@ TD3 (Twin Delayed DDPG) implementation for the Walker2d environment, with both P
 
 **Performance Demo**
 
-![Walker2d TD3 Demo](walker2d/videos/replay.gif)
+![Walker2d TD3 Demo](walker2d/videos/replay.gif?loop=1)
 
 **Implementation Details:**
 - Algorithm: Twin Delayed DDPG (TD3)
