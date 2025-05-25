@@ -1,7 +1,11 @@
+# Reinforcement Learning Experiments
+
+This repository contains a collection of reinforcement learning experiments, including implementations of state-of-the-art algorithms for various environments. The current focus is on the Lunar Lander environment, where our Soft Actor-Critic (SAC) implementation achieves state-of-the-art results.
+
 #### SAC Implementation (State-of-the-Art)
 Soft Actor-Critic implementation targeting the best reported performance.
 
-**Video Demonstration:**
+**5 Trials (Average Score: 290.43)**
 ![Lunar Lander SAC Demo](lunar-lander-sac/videos/lunar_lander_sac_combined.gif)
 
 **Implementation Details:**
