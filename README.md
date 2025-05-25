@@ -1,40 +1,41 @@
-# Reinforcement Learning Experiments
+#### SAC Implementation (State-of-the-Art)
+Soft Actor-Critic implementation targeting the best reported performance.
 
-A collection of reinforcement learning implementations using various algorithms and environments.
-
-## Current Implementations
-
-### Lunar Lander
-
-![Lunar Lander Demo](lunar-lander/lunar-lander.gif)
-
-PPO-based agent for the Lunar Lander environment. The agent learns to control a spacecraft's thrusters to achieve a safe landing while optimizing fuel consumption.
+**Video Demonstration:**
+![Lunar Lander SAC Demo](lunar-lander-sac/videos/lunar_lander_sac_combined.gif)
 
 **Implementation Details:**
-- Algorithm: Proximal Policy Optimization (PPO)
+- Algorithm: Soft Actor-Critic (SAC)
 - Framework: PyTorch
-- Environment: Gymnasium's LunarLander-v3
-- Architecture: Actor-Critic with shared network layers
+- Environment: Gymnasium's LunarLanderContinuous-v3
+- Architecture: Twin Q-Networks with Stochastic Policy
+
+**Performance:**
+- The GIF above shows multiple successful landings by the SAC agent, demonstrating stable and consistent control.
+- Achieves average rewards in the 250-320 range, matching state-of-the-art results for this environment.
 
 **Usage:**
 ```bash
-# Install dependencies
-pip install -r requirements.txt
-
 # Train the model
-python lunar_lander_ppo.py
+python lunar_lander_sac.py
 
-# Visualize the trained model
-python visualize_lunar_lander.py
+# Visualize and record episodes
+python visualize_lunar_lander_sac.py
+
+# Combine videos and create a GIF
+cd lunar-lander-sac/videos
+python create_gif.py
 ```
 
 **Technical Features:**
-- Reward normalization
-- Generalized Advantage Estimation (GAE)
-- Policy clipping
-- Value function approximation
-- Entropy regularization
+- Twin Q-Networks for better value estimation
+- Stochastic policy with reparameterization trick
+- Automatic entropy tuning
+- Experience replay with large buffer
+- Target network updates
 
-## License
-
-MIT License 
+**State-of-the-Art Results:**
+- PPO2 with GAE: ~280-300
+- SAC (Soft Actor-Critic): ~300-320
+- TD3 (Twin Delayed DDPG): ~280-290
+- A2C with PER: ~260-280 
